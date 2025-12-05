@@ -65,7 +65,5 @@ When selecting a model for deployment, balancing accuracy with computational cos
 | **ResNet50**                 | **Balanced**    | **Medium**         | **Efficient ConvNet** <br> A reliable standard. It processes data significantly faster (\~50ms/epoch vs. ViT's \~700ms), making it a solid choice for general server deployments. |
 | **Ultra-Light Vim**          | **Ultra-Fast**  | **Low**            | **$O(N)$ Linear** <br> Designed for speed. With linear complexity and a tiny footprint (\~0.3M params), it is ideal for real-time applications and edge devices.                  |
 
-### 💡 Key Takeaways
-
 - **The Cost of Attention:** While **ViT** offers powerful global context, its quadratic scaling means it requires substantially more GPU VRAM and compute time.
 - **The Efficiency of Vim:** The **Ultra-Light Vim** model shines in resource-constrained environments. Its state-space backbone allows it to process long sequences with linear scaling, making it orders of magnitude cheaper to run than the Transformer.
