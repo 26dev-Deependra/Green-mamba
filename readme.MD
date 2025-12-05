@@ -1,9 +1,5 @@
 # This repo is for RF signal classification using advanced architectures such as VIT and VIM models
 
-Here is a concise, structured report suitable for a GitHub `README.md` file.
-
----
-
 # Model Architectures & Experimental Setup
 
 This repository explores three distinct deep learning architectures for RF signal and image classification: **ResNet50** (CNN), **Vision Transformer** (ViT), and a custom **Ultra-Light Vision Mamba** (Vim).

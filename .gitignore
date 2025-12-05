@@ -20,11 +20,6 @@ __pycache__/
 dataset/
 /dataset/
 
-# Ignore all results, plots, and logs
-vim_results*/
-*.log
-*.csv
-*.png
 
 # Ignore saved model weights
 *.pth
