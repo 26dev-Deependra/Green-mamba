@@ -12,10 +12,9 @@ from sklearn.metrics import confusion_matrix
 from torch.utils.data import DataLoader, Dataset, random_split
 import torchvision.transforms as transforms
 
+# Dataset Loader code
 
-# ================================================================
-# Dataset Definition
-# ================================================================
+
 class CustomDataset(Dataset):
     def __init__(self, root_dir, transform=None):
         self.root_dir = root_dir
@@ -36,9 +35,7 @@ class CustomDataset(Dataset):
         return image, label
 
 
-# ================================================================
-# Model Definition
-# ================================================================
+# Vit initialization
 class ViTForClassification(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
@@ -50,9 +47,7 @@ class ViTForClassification(nn.Module):
         return self.vit(x)
 
 
-# ================================================================
-# Training and Evaluation Functions
-# ================================================================
+# One epoch logic
 def train_one_epoch(model, loader, criterion, optimizer, device):
     model.train()
     total_loss = 0
@@ -66,6 +61,7 @@ def train_one_epoch(model, loader, criterion, optimizer, device):
     return total_loss / len(loader.dataset)
 
 
+# Evaluation code
 def evaluate(model, loader, criterion, device):
     model.eval()
     total_loss, correct, total = 0, 0, 0
@@ -83,19 +79,16 @@ def evaluate(model, loader, criterion, device):
     accuracy = correct / total
     return total_loss / len(loader.dataset), accuracy, labels_list, preds
 
+# main Execution
 
-# ================================================================
-# Main Execution
-# ================================================================
+
 def main():
-    # ----- Configuration -----
     dataset_root = 'dataset'
     batch_size = 8
     num_epochs = 10
     lr = 1e-4
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # ----- Data -----
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor()
@@ -110,12 +103,10 @@ def main():
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_ds, batch_size=batch_size)
 
-    # ----- Model, Loss, Optimizer -----
     model = ViTForClassification(num_classes).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
-    # ----- Training -----
     train_losses, val_losses = [], []
     for epoch in range(num_epochs):
         print(f"\nEpoch {epoch + 1}/{num_epochs}")
@@ -129,10 +120,8 @@ def main():
         print(
             f"Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.4f}")
 
-    # ----- Save Model -----
     torch.save(model.state_dict(), 'vit_classification_model.pth')
 
-    # ----- Loss Plot -----
     plt.plot(range(1, num_epochs + 1), train_losses,
              label='Train', color='blue')
     plt.plot(range(1, num_epochs + 1), val_losses,
@@ -143,7 +132,6 @@ def main():
     plt.legend()
     plt.show()
 
-    # ----- Confusion Matrix -----
     cm = confusion_matrix(true_labels, preds)
     cm_percent = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis] * 100
 
@@ -166,7 +154,6 @@ def main():
     plt.xlabel('Predicted Label')
     plt.show()
 
-    # ----- Model Summary & Graph -----
     summary(model, input_size=(3, 224, 224))
     x = torch.zeros((1, 3, 224, 224)).to(device)
     vis_graph = make_dot(model(x), params=dict(model.named_parameters()))
