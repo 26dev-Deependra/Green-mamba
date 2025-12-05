@@ -54,3 +54,18 @@ This repository explores three distinct deep learning architectures for RF signa
   - **State Dim ($d_{state}$):** 16
   - **Rank ($dt\_rank$):** 6
 - **Augmentation:** Uses `TrivialAugmentWide`, `RandomCrop(128)`, and `RandomHorizontalFlip` for robust training.
+
+## Inference Speed & Resource Cost
+
+When selecting a model for deployment, balancing accuracy with computational cost is just as important as the model's predictive power. Our experiments reveal a massive difference in "cost-to-serve" between the three architectures.
+
+| Architecture                 | Speed Profile   | Resource Intensity | Complexity                                                                                                                                                                        |
+| :--------------------------- | :-------------- | :----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vision Transformer (ViT)** | **Heavyweight** | **High**           | **$O(N^2)$ Quadratic** <br> The self-attention mechanism is resource-hungry. In our tests, it proved \~14x more expensive to run than ResNet50.                                   |
+| **ResNet50**                 | **Balanced**    | **Medium**         | **Efficient ConvNet** <br> A reliable standard. It processes data significantly faster (\~50ms/epoch vs. ViT's \~700ms), making it a solid choice for general server deployments. |
+| **Ultra-Light Vim**          | **Ultra-Fast**  | **Low**            | **$O(N)$ Linear** <br> Designed for speed. With linear complexity and a tiny footprint (\~0.3M params), it is ideal for real-time applications and edge devices.                  |
+
+### 💡 Key Takeaways
+
+- **The Cost of Attention:** While **ViT** offers powerful global context, its quadratic scaling means it requires substantially more GPU VRAM and compute time.
+- **The Efficiency of Vim:** The **Ultra-Light Vim** model shines in resource-constrained environments. Its state-space backbone allows it to process long sequences with linear scaling, making it orders of magnitude cheaper to run than the Transformer.
