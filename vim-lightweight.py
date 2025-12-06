@@ -8,7 +8,6 @@ from PIL import Image
 from sklearn.metrics import confusion_matrix
 from torch.utils.data import Dataset, DataLoader, random_split
 import torchvision.transforms as transforms
-import datetime
 
 try:
     from vision_mamba import Vim
@@ -28,7 +27,7 @@ class CustomDataset(Dataset):
         for cls in self.classes:
             class_dir = os.path.join(root_dir, cls)
             if not os.path.isdir(class_dir):
-                print(f"Warning: Skipping {class_dir}, not a directory.")
+                print(f"{class_dir}, not a directory.")
                 continue
 
             for fname in os.listdir(class_dir):
@@ -36,7 +35,7 @@ class CustomDataset(Dataset):
                 if path.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
                     self.images.append((path, self.class_to_idx[cls]))
                 else:
-                    print(f"Warning: Skipping non-image file: {path}")
+                    print(f"non-image file: {path}")
 
     def __len__(self):
         return len(self.images)
@@ -59,6 +58,11 @@ class CustomDataset(Dataset):
 
 
 # Vim - lightweight
+
+# dt_rank ---> selectivity filter dimention (delta  rank)
+# d_state ---> internal state
+# dim_inner ---> The Channel Width flowing through conv and the ssm layers
+# 1d conv is default , which is 4 size
 class UltraLightVim(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
@@ -138,9 +142,8 @@ def evaluate(model, loader, criterion, device):
 
 def main():
     dataset_root = 'dataset'
-    results_dir = 'vim_results_ultralight_01'
+    results_dir = 'outcommes/vim_lightweight_1'
     os.makedirs(results_dir, exist_ok=True)
-
     batch_size = 32
     num_epochs = 200
     lr = 5e-4
@@ -172,7 +175,7 @@ def main():
     dataset_for_val = CustomDataset(dataset_root, transform=val_transform)
 
     if len(dataset_for_train) == 0:
-        print(f"Error: No images found in {dataset_root}. Please check.")
+        print(f"No images found in {dataset_root}.")
         return
 
     num_classes = len(dataset_for_train.classes)
@@ -193,7 +196,7 @@ def main():
         train_subset, batch_size=batch_size, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_subset, batch_size=batch_size, num_workers=4)
 
-    print("Initializing 'Ultra-Light' Vision Mamba (from scratch)...")
+    print("Ultra-Light' Vision Mamba")
     model = UltraLightVim(num_classes=num_classes).to(device)
 
     total_params = sum(p.numel()
@@ -236,7 +239,7 @@ def main():
             patience_counter = 0
             torch.save(model.state_dict(), os.path.join(
                 results_dir, "best_ultralight_vim_scratch.pth"))
-            print("** Saved new best model **")
+            print("Saved new best model")
         else:
             patience_counter += 1
             if patience_counter >= patience:
