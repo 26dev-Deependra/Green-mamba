@@ -1,0 +1,15 @@
+torch>=2.0.0
+torchvision>=0.15.0
+timm>=0.9.0
+numpy
+pandas
+matplotlib
+scikit-learn
+tqdm
+pillow
+
+Optional: Only needed for GPU training of Green-Mamba
+
+vision-mamba
+
+causal-conv1d
